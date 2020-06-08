@@ -3,6 +3,14 @@
 ## Installation:
 ```pip install requirements.txt```
 
+## Features:
+#### Logging
+#### Automatic Saving
+#### Themes
+#### Achievements
+#### Statistics
+#### Difficulties
+
 ## Run:
 ```python craps.pyw```
 
