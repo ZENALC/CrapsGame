@@ -1,9 +1,8 @@
-__author__ = 'Mihir Shrestha'
-
 import random
 
+
 class Die(object):
-    def __init__(self, numberOfSides, color = "Bone", startingValue = 1, incrementValue = 1):
+    def __init__(self, numberOfSides, color="Bone", startingValue=1, incrementValue=1):
         self.value = 0
         self.color = color
         self.numberOfSides = numberOfSides
@@ -40,7 +39,7 @@ class Die(object):
     def getIncrementValue(self):
         return self.incrementValue
 
-    def  __str__(self):
+    def __str__(self):
         return str(self.value)
 
     def roll(self, difficultyArg):
@@ -49,7 +48,7 @@ class Die(object):
         elif difficultyArg == 2:
             self.setValue(random.choice((7, 11, 6, 8)))
         elif difficultyArg == 3:
-            self.setValue(random.randint(self.startingValue, (self.numberOfSides - 1 ) + self.startingValue))
+            self.setValue(random.randint(self.startingValue, (self.numberOfSides - 1) + self.startingValue))
         elif difficultyArg == 4:
             self.setValue(random.choice((2, 3, 2, 2, 2, 2, 2, 3, 4, 5, 6, 7, 9, 10, 12)))
         else:

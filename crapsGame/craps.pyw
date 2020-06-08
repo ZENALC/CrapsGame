@@ -1,32 +1,53 @@
-from die import *
-import random, sys, logging, crapsResources_rc
+import logging
+import sys
+import os
 from pickle import load, dump
-from PyQt5.QtCore import pyqtSlot, Qt
+
 from PyQt5 import QtGui, uic
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QMessageBox
 
-__author__ = 'Mihir Shrestha'
+import craps_rc
+from crapsGame.die import *
 
 
 class AchievementWindow(QDialog):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('achievements.ui', self)
+        uic.loadUi(os.path.join('UI Files', 'achievements.ui'), self)
+
+
+class HelpWindow(QDialog):
+    def __init__(self, parent=None):
+        # super(HelpWindow, self).__init__(parent)
+        super().__init__(parent)
+        uic.loadUi(os.path.join('UI Files', 'achievements.ui'), self)
+        if crapsApp.initializationLogging:
+            logging.info("Initialized help app")
 
 
 class AppStats(QDialog):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi('stats.ui', self)
+        uic.loadUi(os.path.join('UI Files', 'stats.ui'), self)
+
+
+def classicThemeApply():
+    if crapsApp.methodsLogging:
+        logging.info("Called classicThemeApply method")
+
+    crapsApp.centralwidget.setStyleSheet("")
+    crapsApp.statusbar.setStyleSheet("")
+    crapsApp.theme = "classic"
 
 
 class AppSettings(QDialog):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         # super(AppSettings, self).__init__(parent)
         super().__init__(parent)
-        uic.loadUi('settings.ui', self)
+        uic.loadUi(os.path.join('UI Files', 'settings.ui'), self)
 
-        if crapsApp.initializationLogging == True:
+        if crapsApp.initializationLogging:
             logging.info("Initialized settings app")
 
         self.buttonBox.accepted.connect(crapsApp.saveSettings)
@@ -43,13 +64,13 @@ class AppSettings(QDialog):
         self.impossibleButton.toggled.connect(lambda: crapsApp.changeDifficulty(5))
         self.enabledCheck.toggled.connect(self.loggingControl)
 
-        self.classicTheme.toggled.connect(self.classicThemeApply)
+        self.classicTheme.toggled.connect(classicThemeApply)
         self.rainbowTheme.toggled.connect(self.rainbowThemeApply)
         self.laNoireTheme.toggled.connect(self.laNoireThemeApply)
         self.naturalTheme.toggled.connect(self.naturalThemeApply)
 
         if crapsApp.theme == "classic":
-            self.classicThemeApply()
+            classicThemeApply()
             self.classicTheme.setChecked(True)
 
         elif crapsApp.theme == "rainbow":
@@ -64,7 +85,8 @@ class AppSettings(QDialog):
             self.naturalThemeApply()
             self.naturalTheme.setChecked(True)
 
-        self.difficultyButton = [self.alwaysWinButton, self.easyButton, self.mediumButton, self.hardButton, self.impossibleButton]
+        self.difficultyButton = [self.alwaysWinButton, self.easyButton, self.mediumButton, self.hardButton,
+                                 self.impossibleButton]
         self.difficultyButton[crapsApp.difficultyLevel - 1].setChecked(True)
 
         self.startingBankSpin.setValue(crapsApp.startingBank)
@@ -101,8 +123,9 @@ class AppSettings(QDialog):
             if crapsApp.warningsLogging:
                 self.warningsCheck.setChecked(True)
 
-            self.loggingOptions = [crapsApp.difficultyLogging, crapsApp.winsLogging, crapsApp.methodsLogging, crapsApp.rollsLogging, crapsApp.errorsLogging, crapsApp.lossesLogging, crapsApp.bankLogging, crapsApp.initializationLogging, crapsApp.warningsLogging]
-
+            self.loggingOptions = [crapsApp.difficultyLogging, crapsApp.winsLogging, crapsApp.methodsLogging,
+                                   crapsApp.rollsLogging, crapsApp.errorsLogging, crapsApp.lossesLogging,
+                                   crapsApp.bankLogging, crapsApp.initializationLogging, crapsApp.warningsLogging]
 
     def restoreEverything(self):
         crapsApp.difficultyLevel = 3
@@ -115,39 +138,32 @@ class AppSettings(QDialog):
         self.maximumBetSpin.setValue(1000)
 
         self.mediumButton.setChecked(True)
-        self.classicThemeApply()
+        classicThemeApply()
         self.classicTheme.setChecked(True)
         self.enabledCheck.setChecked(False)
         self.loggingControl()
 
-    def classicThemeApply(self):
-        if crapsApp.methodsLogging == True:
-            logging.info("Called classicThemeApply method")
-
-        crapsApp.centralwidget.setStyleSheet("")
-        crapsApp.statusbar.setStyleSheet("")
-        crapsApp.theme = "classic"
-
-    def rainbowThemeApply(self):
-        if crapsApp.methodsLogging == True:
+    @staticmethod
+    def rainbowThemeApply():
+        if crapsApp.methodsLogging:
             logging.info("Called rainbowThemeApply method")
 
         crapsApp.centralwidget.setStyleSheet("background-color: #329992; color: black")
         crapsApp.statusbar.setStyleSheet("background-color: #329992; color: black;")
         crapsApp.theme = "rainbow"
 
-
-    def laNoireThemeApply(self):
-        if crapsApp.methodsLogging == True:
+    @staticmethod
+    def laNoireThemeApply():
+        if crapsApp.methodsLogging:
             logging.info("Called laNoireThemeApply method")
 
         crapsApp.centralwidget.setStyleSheet("background-color: #462E2E; color: white;")
         crapsApp.statusbar.setStyleSheet("background-color: #462E2E; color: white;")
         crapsApp.theme = "laNoire"
 
-    def naturalThemeApply(self):
-
-        if crapsApp.methodsLogging == True:
+    @staticmethod
+    def naturalThemeApply():
+        if crapsApp.methodsLogging:
             logging.info("Called naturalThemeApply method")
 
         crapsApp.centralwidget.setStyleSheet("background-color: #8ff442; color: #000000;")
@@ -155,8 +171,7 @@ class AppSettings(QDialog):
         crapsApp.theme = "natural"
 
     def loggingControl(self):
-
-        if crapsApp.methodsLogging == True:
+        if crapsApp.methodsLogging:
             logging.info("Called loggingControl method")
 
         if self.enabledCheck.isChecked():
@@ -182,23 +197,14 @@ class AppSettings(QDialog):
             self.warningsCheck.setEnabled(False)
 
 
-class HelpWindow(QDialog):
-    def __init__(self, parent = None):
-        # super(HelpWindow, self).__init__(parent)
-        super().__init__(parent)
-        uic.loadUi("helpDialog.ui", self)
-        if crapsApp.initializationLogging == True:
-            logging.info("Initialized help app")
-
-
 class CrapsGame(QMainWindow):
     """A game of craps."""
 
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         """Build a game with two dice."""
 
         super().__init__(parent)
-        uic.loadUi("crapsUI.ui", self)
+        uic.loadUi(os.path.join('UI Files', 'crapsUI.ui'), self)
 
         self.actionHelp.triggered.connect(self.help)
         self.actionSettings.triggered.connect(self.settingView)
@@ -231,7 +237,7 @@ class CrapsGame(QMainWindow):
             self.die2 = Die(6)
             self.die1.setValue(6)
             self.die2.setValue(6)
-            self.results ="Welcome to the game of Craps!"
+            self.results = "Welcome to the game of Craps!"
             self.betWins = 0
             self.betLosses = 0
             self.rollAmt = 0
@@ -365,7 +371,9 @@ class CrapsGame(QMainWindow):
         self.minimumBet = settingApp.minimumBetSpin.value()
         self.maximumBet = settingApp.maximumBetSpin.value()
 
-        self.checkOptions = [settingApp.difficultyCheck, settingApp.errorsCheck, settingApp.winsCheck, settingApp.lossesCheck, settingApp.rollsCheck, settingApp.bankCheck, settingApp.warningsCheck, settingApp.initializationCheck, settingApp.methodsCheck]
+        self.checkOptions = [settingApp.difficultyCheck, settingApp.errorsCheck, settingApp.winsCheck,
+                             settingApp.lossesCheck, settingApp.rollsCheck, settingApp.bankCheck,
+                             settingApp.warningsCheck, settingApp.initializationCheck, settingApp.methodsCheck]
 
         if self.difficultyLogging:
             logging.info("Changed difficulty level to " + str(self.difficultyLevel))
@@ -399,7 +407,8 @@ class CrapsGame(QMainWindow):
 
         if self.secondRoll:
             self.cancelRoll.setEnabled(True)
-            self.hint.setText("You may also choose to not roll again to only lose your placed amount bet without payout ratios.")
+            self.hint.setText(
+                "You may also choose to not roll again to only lose your placed amount bet without payout ratios.")
 
         else:
             self.hint.setText("")
@@ -410,7 +419,8 @@ class CrapsGame(QMainWindow):
         if self.getCurrentBank() <= 0:
             if self.bankLogging:
                 logging.info("Game over")
-            self.hint.setText('Game over. You rolled the dice a total of %i times. Go to settings and click restart to play again!' % self.rollAmt)
+            self.hint.setText(
+                'Game over. You rolled the dice a total of %i times. Go to settings and click restart to play again!' % self.rollAmt)
             self.rollButton.setEnabled(False)
             self.moneyBet.setEnabled(False)
 
@@ -532,7 +542,7 @@ class CrapsGame(QMainWindow):
         elif self.betWins >= 1000:
             achievementApp.thousandBank.setText("Achieved")
 
-    @pyqtSlot() # player asked for a roll
+    @pyqtSlot()  # player asked for a roll
     def rollAction(self):
         if self.methodsLogging:
             logging.info("Reached rollAction method")
@@ -549,7 +559,8 @@ class CrapsGame(QMainWindow):
         else:
             self.currentRoll = self.die1.roll(self.difficultyLevel)
             if self.currentRoll < 7:
-                self.die1.setValue(random.choice([x for x in range(1, self.currentRoll)])) # It's a throwaway variable, so I am using x.
+                self.die1.setValue(random.choice(
+                    [x for x in range(1, self.currentRoll)]))  # It's a throwaway variable, so I am using x.
             else:
                 self.die1.setValue(random.choice([x for x in range(self.currentRoll - 6, 7)]))
             self.die2.setValue(self.currentRoll - self.die1.getValue())
@@ -594,7 +605,8 @@ class CrapsGame(QMainWindow):
             else:
                 self.secondRoll = True
                 self.previousRoll = self.currentRoll
-                self.hint.setText("You may also choose to not roll again to only lose your placed amount bet without payout ratios.")
+                self.hint.setText(
+                    "You may also choose to not roll again to only lose your placed amount bet without payout ratios.")
                 self.moneyBet.setEnabled(False)
                 self.cancelRoll.setEnabled(True)
 
@@ -643,11 +655,13 @@ class CrapsGame(QMainWindow):
                 self.rollButton.setEnabled(False)
 
             elif moneyBet > self.maximumBet:
-                self.results = "This bet of ${} is too high. Please change your settings or reduce ${} from your bet.".format(moneyBet, moneyBet - self.maximumBet)
+                self.results = "This bet of ${} is too high. Please change your settings or reduce ${} from your bet.".format(
+                    moneyBet, moneyBet - self.maximumBet)
                 self.rollButton.setEnabled(False)
 
             elif moneyBet < self.minimumBet:
-                self.results = "This bet of ${} is too low. Please change your settings or add ${} to your bet.".format(moneyBet, self.minimumBet - moneyBet)
+                self.results = "This bet of ${} is too low. Please change your settings or add ${} to your bet.".format(
+                    moneyBet, self.minimumBet - moneyBet)
                 self.rollButton.setEnabled(False)
 
             elif moneyBet > self.getCurrentBank():
@@ -667,7 +681,7 @@ class CrapsGame(QMainWindow):
                 self.rollButton.setEnabled(False)
         self.updateUI()
 
-    @pyqtSlot() # player clicking the roll button
+    @pyqtSlot()  # player clicking the roll button
     def betChangedHandler(self):
         settingApp.restartButton.setEnabled(True)
         if self.methodsLogging:
@@ -684,13 +698,15 @@ class CrapsGame(QMainWindow):
             #     self.rollButton.setEnabled(False)
 
             if moneyBet > self.maximumBet:
-                self.results = "This bet of {} is too high. Please change your settings or reduce ${} from your bet and retype your bet.".format(moneyBet, moneyBet - self.maximumBet)
+                self.results = "This bet of {} is too high. Please change your settings or reduce ${} from your bet and retype your bet.".format(
+                    moneyBet, moneyBet - self.maximumBet)
                 self.rollButton.setEnabled(False)
                 self.updateUI()
                 return
 
             if moneyBet < self.minimumBet:
-                self.results = "This bet of {} is too low. Please change your settings or add ${} to your bet and retype your bet.".format(moneyBet, self.minimumBet - moneyBet)
+                self.results = "This bet of {} is too low. Please change your settings or add ${} to your bet and retype your bet.".format(
+                    moneyBet, self.minimumBet - moneyBet)
                 self.rollButton.setEnabled(False)
                 self.updateUI()
                 return
@@ -761,7 +777,13 @@ class CrapsGame(QMainWindow):
         quit_msg = "Are you sure you want to exit Craps? All changes will be saved."
         reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.Yes, QMessageBox.No)
 
-        self.pickleInfo = [self.winsCount, self.lossesCount, self.currentBet, self.startingBank, self.currentBank, self.currentRoll, self.secondRoll, self.previousRoll, self.die1, self.die2, self.results, self.betWins, self.betLosses, self.rollAmt, self.preferredDifficultyLevel, self.difficultyLevel, self.minimumBet, self.maximumBet, self.logging, self.difficultyLogging, self.errorsLogging, self.winsLogging, self.lossesLogging, self.rollsLogging, self.bankLogging, self.methodsLogging, self.initializationLogging, self.warningsLogging, self.theme, self.totalGames]
+        self.pickleInfo = [self.winsCount, self.lossesCount, self.currentBet, self.startingBank, self.currentBank,
+                           self.currentRoll, self.secondRoll, self.previousRoll, self.die1, self.die2, self.results,
+                           self.betWins, self.betLosses, self.rollAmt, self.preferredDifficultyLevel,
+                           self.difficultyLevel, self.minimumBet, self.maximumBet, self.logging, self.difficultyLogging,
+                           self.errorsLogging, self.winsLogging, self.lossesLogging, self.rollsLogging,
+                           self.bankLogging, self.methodsLogging, self.initializationLogging, self.warningsLogging,
+                           self.theme, self.totalGames]
 
         if reply == QMessageBox.Yes:
             event.accept()
@@ -771,10 +793,13 @@ class CrapsGame(QMainWindow):
         else:
             event.ignore()
 
-if __name__== "__main__":
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    logger = logging.basicConfig(filename='craps.log', level=logging.INFO,
-                        format='%(asctime)s %(levelname)s Ln %(lineno)d: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.basicConfig(filename='craps.log',
+                        level=logging.INFO,
+                        format='%(asctime)s %(levelname)s Ln %(lineno)d: %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p')
     crapsApp = CrapsGame()
     helpApp = HelpWindow()
     statApp = AppStats()
