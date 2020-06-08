@@ -1,3 +1,8 @@
-# CrapsGame
+# Craps game made with a GUI using PyQT5.
 
-Craps game
+## Installation:
+```pip install requirements.txt```
+
+## Run:
+```python craps.pyw```
+
